@@ -12,17 +12,26 @@ var io = sockenIO(server);
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to chat app',
+        createdAt: new Date().getTime()
+    });
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined',
+        createdAt: new Date().getTime()
+    });
+
+
     console.log('New User connected');
 
     socket.on('disconnect', () => {
         console.log('User disconnected :(');
     });
 
-/*    socket.emit('newMessage', {
-        from: 'Vasya',
-        text: 'Go home!',
-        createdAt: new Date().getTime()
-    });*/
+
+
     socket.on('createMessage', (message) => {
         console.log(`new Message created: ${JSON.stringify(message)}`);
         io.emit('newMessage', {
@@ -30,6 +39,11 @@ io.on('connection', (socket) => {
             text: message.text,
             createdAt: new Date().getTime()
         });
+        /*socket.broadcast.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        });*/
     });
 });
 
