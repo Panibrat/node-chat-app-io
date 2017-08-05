@@ -1,5 +1,28 @@
 var socket = io();
 
+function scrollBottom(){
+    var messages = $('#messages');
+    var newMessage = messages.children('li:last-child');
+    var clientHeight = messages.prop('clientHeight');
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight');
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = newMessage.prev().innerHeight();
+
+    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+        messages.scrollTop(scrollHeight);
+/*
+        console.log('scrollHeight', scrollHeight);
+        console.log('clientHeight', clientHeight);
+        console.log('scrollTop', scrollTop);
+        console.log('newMessageHeight', newMessageHeight);
+        console.log('lastMessageHeight', lastMessageHeight);
+*/
+
+    }
+
+}
+
 socket.on('connect', () => {
     console.log('Connected to server');
 });
@@ -18,15 +41,8 @@ socket.on('newMessage', (message) => {
     });
 
     $('#messages').append(html);
-
+    scrollBottom();
 });
-/*socket.on('newMessage', (message) => {
-    console.log('New Message', message);
-    var formattedTime = moment(message.createdAt).format('h:mm:ss a');
-    var li = $('<li></li>');
-    li.text(`${message.from} ${formattedTime}: ${message.text}`);
-    $('#messages').append(li);
-});*/
 
 socket.on('newLocationMessage', (message) => {
     var formattedTime = moment(message.createdAt).format('h:mm:ss a');
@@ -38,18 +54,9 @@ socket.on('newLocationMessage', (message) => {
     });
 
     $('#messages').append(html);
+    scrollBottom();
 
 });
-
-/*socket.on('newLocationMessage', (message) => {
-    var formattedTime = moment(message.createdAt).format('h:mm:ss a');
-    var li = $('<li></li>');
-    var a = $('<a target="_blank">My current location</a>');
-    li.text(`${message.from} ${formattedTime} `);
-    a.attr('href', message.url);
-    li.append(a);
-    $('#messages').append(li);
-});*/
 
 $('#message-form').on('submit', (e) => {
     e.preventDefault();
