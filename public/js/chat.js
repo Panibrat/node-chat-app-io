@@ -11,24 +11,37 @@ function scrollBottom(){
 
     if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
         messages.scrollTop(scrollHeight);
-/*
-        console.log('scrollHeight', scrollHeight);
-        console.log('clientHeight', clientHeight);
-        console.log('scrollTop', scrollTop);
-        console.log('newMessageHeight', newMessageHeight);
-        console.log('lastMessageHeight', lastMessageHeight);
-*/
-
     }
 
 }
 
 socket.on('connect', () => {
     console.log('Connected to server');
+    var params = $.deparam(window.location.search);
+    socket.emit('join', params, (err) => {
+        if(err) {
+            alert(err);
+            window.location.href = '/';
+        } else {
+            console.log('No error');
+        }
+    });
 });
 
 socket.on('disconnect', () => {
     console.log('Disconnected from server :(');
+});
+
+socket.on('updateUserList', (users) => {
+    //console.log(`Users list: ${users}`);
+    var ol = $('<ol></ol>');
+
+    users.forEach((user) => {
+        ol.append($('<li></li>').text(user));
+    });
+
+    $('#users').html(ol);
+
 });
 
 socket.on('newMessage', (message) => {
